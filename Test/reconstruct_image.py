@@ -3,7 +3,7 @@ import numpy
 import torchvision
 import cv2
 from PIL import Image
-
+from bvae import BetaVae
 
 
 def inference(frame: torch.Tensor) -> numpy.ndarray:
@@ -21,7 +21,7 @@ def inference(frame: torch.Tensor) -> numpy.ndarray:
             encoder.batch = 1
             print(encoder.batch)
             out, mu, logvar = encoder(frame.unsqueeze(0).to('cuda'))
-            mu = mu.detach(numpy()).cpu()
+            mu = mu.detach().cpu().numpy()
             logvar = logvar.detach().cpu().numpy()
             out = out * 255
             print(out.shape)
@@ -34,7 +34,8 @@ def inference(frame: torch.Tensor) -> numpy.ndarray:
             out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
             
             output = cv2.imshow('dst', out)
-            cv2.imwrite('output.png',out)
+            cv2.imwrite('output_fog.png',out)
+            # cv2.imwrite('output_original.png',out)
             cv2.waitKey(0)
 
 
@@ -56,7 +57,8 @@ def preprocess(frame, image_array: numpy.ndarray) -> torch.Tensor:
             
 
 def input():
-    path="/home/n2202864a/Downloads/test1/original.png"
+    # path="/home/n2202864a/Downloads/test1/original.png"
+    path="/home/n2202864a/Downloads/test1/fog.png"
     frame = cv2.imread(path)
     print(frame)
     image_array = numpy.array(frame)
